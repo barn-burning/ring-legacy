@@ -45,3 +45,8 @@ run('closeNews016()');
 assert.equal(run('S.newsPopup016'),false);
 assert.equal(run('S.eventView079'),'coach');
 console.log('PASS: newspaper opens and closes over the current scene.');
+
+run("S.history=[{week:3,opponent:'다른 상대',result:'W'}]");
+assert(run('newsPopupHtml016()').includes('지난 신문 · '));
+run("S.history[0].week=2;S.history[0].opponent=undefined;S.media.articles[0].opponent=undefined");
+assert(run('newsPopupHtml016()').includes('경기 후 언론 반응 · '));

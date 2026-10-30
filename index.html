@@ -2594,8 +2594,8 @@ attendPaidCamp=function(...args){let before=S?.p?{...S.p}:null;statPaidBefore016
 
 /* The current article opens over the ongoing scene and closes back to it. */
 function newsPopupHtml016(){
- let a=mediaState().articles[0];
- return '<div class="news-backdrop016"><section class="news-popup016" role="dialog" aria-modal="true" aria-labelledby="newsTitle016" tabindex="-1"><div class="news-masthead016"><b>RING LEGACY</b><button class="news-close016" aria-label="신문 닫기" onclick="closeNews016()">×</button></div><small>경기 후 언론 반응'+(a?' · '+dateText(a.week):'')+'</small><h2 id="newsTitle016">'+(a?esc(a.headline):'아직 조용한 이름.')+'</h2>'+(a?'<p>'+esc(cleanDecisionText(a.body))+'</p><blockquote>'+esc(a.quote)+'</blockquote>':'')+'<button class="primary" onclick="closeNews016()">신문 접기</button></section></div>';
+ let a=mediaState().articles[0],h=S.history?.[0],current=!!a&&!!h&&a.week===h.week&&a.opponent===h.opponent;
+ return '<div class="news-backdrop016"><section class="news-popup016" role="dialog" aria-modal="true" aria-labelledby="newsTitle016" tabindex="-1"><div class="news-masthead016"><b>RING LEGACY</b><button class="news-close016" aria-label="신문 닫기" onclick="closeNews016()">×</button></div><small>'+(current?'경기 후 언론 반응':'지난 신문')+(a?' · '+dateText(a.week):'')+'</small><h2 id="newsTitle016">'+(a?esc(a.headline):'아직 조용한 이름.')+'</h2>'+(a?'<p>'+esc(cleanDecisionText(a.body))+'</p><blockquote>'+esc(a.quote)+'</blockquote>':'')+'<button class="primary" onclick="closeNews016()">신문 접기</button></section></div>';
 }
 function closeNews016(){if(!S)return;S.newsPopup016=false;render();saveGame();}
 const newsShowBefore016=showEvent079;
