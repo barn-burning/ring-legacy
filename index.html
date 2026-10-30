@@ -2356,7 +2356,7 @@ const detailBefore014=detailHtml;
 detailHtml=function(d){
   stanceOf014(d);let html=detailBefore014(d),stance=stanceName014(d);
   html=html.replace('<small>스타일</small><h4>'+identityLine014(d)+'</h4><p>'+styleNotes[d.style]+'</p>','<small>기본 자세</small><h4>'+stance+'</h4><p>'+(d.stance014==='southpaw'?'오른발과 오른손을 앞에 두고 선다.':'왼발과 왼손을 앞에 두고 선다.')+'</p>');
-  const field='<div class="identity-stance014"><label for="startingStance014">기본 자세</label><select id="startingStance014" onchange="setStartingStance014(this.value)"><option value="orthodox"'+(d.stance014==='orthodox'?' selected':'')+'>오소독스 · 왼손이 앞</option><option value="southpaw"'+(d.stance014==='southpaw'?' selected':'')+'>사우스포 · 오른손이 앞</option></select><small>스타일은 A급부터 확립합니다.</small></div>';
+  const field='<div class="identity-stance014"><label for="startingStance014">기본 자세</label><select id="startingStance014" onchange="setStartingStance014(this.value)"><option value="orthodox"'+(d.stance014==='orthodox'?' selected':'')+'>오소독스</option><option value="southpaw"'+(d.stance014==='southpaw'?' selected':'')+'>사우스포</option></select></div>';
   return html.replace('</select><small>이 체급에서 첫 경기를 시작합니다.</small></div></section>','</select><small>이 체급에서 첫 경기를 시작합니다.</small></div>'+field+'</section>');
 };
 /* Remove the old style-vs-style rock-paper-scissors table entirely. */
