@@ -986,7 +986,7 @@ else if(h.result==='D'){headline=p.name+', 승부를 가리지 못한 밤';body=
 else{tone='positive';headline=p.name+', '+h.method+'승으로 한 걸음 전진';body=h.opponent+'을 상대로 승리를 추가했다. 현재 '+wins+'승 '+losses+'패. '+(ko?'경기를 끝내는 결정력이 이번 승부를 갈랐다.':'승리를 쌓아가는 과정에서 다음 상대의 선택이 중요해진다.');quote='당장의 과제는 이 좋은 결과를 꾸준한 흐름으로 만드는 것이다.';}
 let previous=m.lastLevel,expanded=level>previous?mediaLevels[previous]+' → '+mediaLevels[level]:null;
 m.mood=clamp(m.mood+(win?4+Math.min(winning,5):h.result==='L'?-4-Math.min(losing,5):0),0,100);
-let article={week:h.week,headline,body,quote,tone,level,expanded,record:wins+'승 '+losses+'패 '+draws+'무',streak:winning>=2?winning+'연승':losing>=2?losing+'연패':'',opponent:h.opponent};
+let article={week:h.week,result:h.result,headline,body,quote,tone,level,expanded,record:wins+'승 '+losses+'패 '+draws+'무',streak:winning>=2?winning+'연승':losing>=2?losing+'연패':'',opponent:h.opponent};
 m.articles.unshift(article);m.articles=m.articles.slice(0,36);m.lastLevel=level;m.expanded=expanded;h.pressPublished=true;return article;}
 function mediaPanelHtml(){let m=mediaState(),a=m.articles[0],label=!a?'관심이 모이기 전':a.tone==='critical'?'비판이 커지는 중':a.tone==='concern'?'우려의 시선':a.tone==='neutral'?'지켜보는 시선':'기대가 커지는 중';
 return '<section class="mediapanel"><div class="mediaheading"><small>언론의 시선</small><span>'+mediaLevels[mediaLevel()]+'</span></div><div class="mediamood"><b>'+label+'</b><i><em style="width:'+m.mood+'%"></em></i></div>'+(a?'<article class="pressarticle '+a.tone+'"><div class="pressdateline">'+dateText(a.week)+' · '+a.record+(a.streak?' · '+a.streak:'')+'</div><h3>'+esc(a.headline)+'</h3><p>'+esc(a.body)+'</p><blockquote>'+esc(a.quote)+'</blockquote>'+(a.expanded?'<div class="pressreach">관심의 무대가 넓어졌다<br><b>'+esc(a.expanded)+'</b></div>':'')+'</article>':'<div class="pressquiet"><h3>아직은, 링 밖에서 조용한 이름.</h3><p>데뷔전을 앞두고 있다.</p></div>')+'<details class="pressarchive"><summary>지난 기사 '+m.articles.length+'건</summary>'+m.articles.map(x=>'<div class="pressclipping '+x.tone+'"><small>'+dateText(x.week)+' · '+mediaLevels[x.level]+'</small><b>'+esc(x.headline)+'</b><span>'+x.record+'</span></div>').join('')+'</details></section>';}
@@ -2594,7 +2594,7 @@ attendPaidCamp=function(...args){let before=S?.p?{...S.p}:null;statPaidBefore016
 
 /* The current article opens over the ongoing scene and closes back to it. */
 function newsPopupHtml016(){
- let a=mediaState().articles[0],h=S.history?.[0],current=!!a&&!!h&&a.week===h.week&&a.opponent===h.opponent;
+ let a=mediaState().articles[0],h=S.history?.[0],current=!!a&&!!h&&a.week===h.week&&a.opponent===h.opponent&&a.result===h.result;
  return '<div class="news-backdrop016"><section class="news-popup016" role="dialog" aria-modal="true" aria-labelledby="newsTitle016" tabindex="-1"><div class="news-masthead016"><b>RING LEGACY</b><button class="news-close016" aria-label="신문 닫기" onclick="closeNews016()">×</button></div><small>'+(current?'경기 후 언론 반응':'지난 신문')+(a?' · '+dateText(a.week):'')+'</small><h2 id="newsTitle016">'+(a?esc(a.headline):'아직 조용한 이름.')+'</h2>'+(a?'<p>'+esc(cleanDecisionText(a.body))+'</p><blockquote>'+esc(a.quote)+'</blockquote>':'')+'<button class="primary" onclick="closeNews016()">신문 접기</button></section></div>';
 }
 function closeNews016(){if(!S)return;S.newsPopup016=false;render();saveGame();}
