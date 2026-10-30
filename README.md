@@ -4,7 +4,7 @@
 
 [바로 플레이](https://barn-burning.github.io/ring-legacy/)
 
-현재 버전: **Alpha 0.9.7**
+현재 버전: **Alpha 0.9.8**
 
 ## 플레이 및 개발
 

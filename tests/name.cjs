@@ -30,3 +30,12 @@ run('setPlayerName097("<Boxer>\\"Test");renderSelection()');assert(el('start').i
 run('setPlayerName097("New Champion");showPathChoice();completePrologue073();saveGame();loadGame()');
 assert.equal(run('S.p.name'),'New Champion');assert.equal(run('S.creationProfile.name'),'New Champion');
 console.log('PASS: generated fallback, custom name, escaped input, unchanged attributes/portrait, career and saved identity.');
+
+for(let c=0;c<12;c++)for(let i=0;i<40;i++)assert(/^[가-힣 ]+$/.test(run('nameFor('+c+')')));
+assert.equal(run('localizeLegacy098("Hiro Tanaka vs Joao Silva")'),'다나카 히로 vs 주앙 시우바');
+const migrated=JSON.parse(run('JSON.stringify(localizeLegacy098({id:"career-Jack Brooks",name:"Jack Brooks",history:[{opponent:"Luis Morales",story:"Luis Morales 승리"}]}))'));
+assert.equal(migrated.id,'career-Jack Brooks');assert.equal(migrated.name,'잭 브룩스');assert.equal(migrated.history[0].opponent,'루이스 모랄레스');
+run('S.roster[0].name="Alex Miller";S.noteName098="Luis Morales";saveGame();loadGame()');
+assert.equal(run('S.roster[0].name'),'앨릭스 밀러');assert.equal(run('S.noteName098'),'루이스 모랄레스');assert.equal(run('S.p.name'),'New Champion');
+assert.equal(run('localizeLegacy098("Jack Brooks", "Jack Brooks")'),'Jack Brooks');
+console.log('PASS: all locales generate Hangul; language-specific spellings; legacy records migrate without changing IDs; custom player name survives.');
