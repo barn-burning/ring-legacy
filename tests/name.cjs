@@ -39,3 +39,17 @@ run('S.roster[0].name="Alex Miller";S.noteName098="Luis Morales";saveGame();load
 assert.equal(run('S.roster[0].name'),'앨릭스 밀러');assert.equal(run('S.noteName098'),'루이스 모랄레스');assert.equal(run('S.p.name'),'New Champion');
 assert.equal(run('localizeLegacy098("Jack Brooks", "Jack Brooks")'),'Jack Brooks');
 console.log('PASS: all locales generate Hangul; language-specific spellings; legacy records migrate without changing IDs; custom player name survives.');
+
+for(const weight of [2,6,8,10,12,16]){
+ run('reset();enterSelection085();selectCandidate(0)');
+ const before=run('JSON.stringify(draft.spec)');
+ run('setPlayerName097("Custom Boxer");setStartingWeight0910('+weight+')');
+ assert.equal(run('draft.w'),weight);assert.equal(run('draft.name'),'Custom Boxer');assert.equal(run('JSON.stringify(draft.spec)'),before);
+ assert(run('detailHtml(draft)').includes('value="'+weight+'" selected'));
+ run('setStartingWeight0910(3)');assert.equal(run('draft.w'),weight);
+ run('showPathChoice();completePrologue073();saveGame();loadGame()');assert.equal(run('S.p.w'),weight);assert.equal(run('S.p.name'),'Custom Boxer');assert(run('S.roster.some(n=>n.w===S.p.w)'));
+ run('setStartingWeight0910(2)');assert.equal(run('S.p.w'),weight);
+}
+run('reset();enterSelection085();selectCandidate(0);detailHtml(draft);setPlayerName097("Other Name");restoreGeneratedName0910()');
+assert.equal(run('draft.name'),run('draft.generatedName097'));assert.equal(run('draft.customName097'),false);
+console.log('PASS: all six starting divisions, consistent roster/save identity, invalid and mid-career changes blocked, attributes retained, default name restored.');
