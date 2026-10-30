@@ -35,6 +35,19 @@ assert.equal(run('F.round===broadcastPhase().start'),true);choices++;run('setTac
 advanceTick();assert(parseFloat(el('broadcastProgressFill').style.width)>0);finishSegment();assert(choices<5);
 }assert.equal(choices,count);assert(run('S.lastBoutBroadcast.events.some(e=>e.kind==="downwon")'));assert.equal(run('S.history.length'),1);
 }
+// The default short-career auto-start must not skip any later corner break.
+for(let max of [6,8,10,12]){
+fresh();run('F.max='+max+';F.offer.max='+max+';F.offer.type="normal";F.offer.stake=[];S.shortRun.enabled=true;beginBroadcastPhase()');
+finishSegment();let pausedRound=run('F.round');assert.equal(pausedRound,run('broadcastPlan(F.max)[0].end'));
+run('render();setBroadcastSpeed(1);render()');
+for(let i=0;i<20&&timers.size;i++)advanceTick();
+assert.equal(run('F.round'),pausedRound);assert.equal(run('broadcastRunning()'),false);
+run('saveGame();loadGame()');for(let i=0;i<20&&timers.size;i++)advanceTick();
+assert.equal(run('F.round'),pausedRound);assert.equal(run('broadcastRunning()'),false);
+run('setTactic("카운터")');assert.equal(run('F.decision'),'카운터');
+run('beginBroadcastPhase()');assert.equal(run('broadcastRunning()'),true);finishSegment();assert(run('F.round')>pausedRound);
+}
+console.log('PASS: short-career 6/8/10/12R corner waits through redraw, speed change and saved resume until manual start.');
 fresh();run('beginBroadcastPhase()');while(run('F.round')<1)assert(advanceTick());run('saveGame();loadGame()');assert.equal(run('broadcastRunning()'),false);assert.equal(run('F.round'),1);run('setTactic("카운터")');assert.equal(run('F.decision'),'거리 유지');run('beginBroadcastPhase()');finishSegment();assert.equal(run('S.history.length'),1);
 run('stepBout=function(f,t){f.round++;f.downs[1]++;f.logs.push("상대 다운");f.result={winner:0,method:"KO",round:f.round,cards:[[10,8],[10,8],[10,8]]};};');
 fresh();run('beginBroadcastPhase()');finishSegment();assert.equal(run('S.phase'),'post');assert.equal(run('knockoutPresentation.method'),'KO');assert(run('knockoutHtml().includes("승부를 끝냈다!")'));assert.equal(run('S.lastBoutBroadcast.round'),1);assert.equal(run('S.history.length'),1);

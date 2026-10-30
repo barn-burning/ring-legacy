@@ -47,6 +47,20 @@ assert.equal(run('S.eventView079'),'coach');
 console.log('PASS: newspaper opens and closes over the current scene.');
 
 run("S.history=[{week:3,opponent:'다른 상대',result:'W'}]");
-assert(run('newsPopupHtml016()').includes('지난 신문 · '));
+assert(run('newsPopupHtml016()').includes('지난 기사 · '));
 run("S.history[0].week=2;S.history[0].opponent=undefined;S.media.articles[0].opponent=undefined;S.media.articles[0].result='W'");
 assert(run('newsPopupHtml016()').includes('경기 후 언론 반응 · '));
+
+// A news article must show reactions from its own bout, including archived news.
+run("S.history=[{week:2,opponent:'old',result:'W',community:{version:2,title:'과거 경기 반응',views:12,voices:[{persona:'팬',text:'좋은 경기',likes:2}]}},{week:3,opponent:'new',result:'L',community:{version:2,title:'다른 경기 반응',views:10,voices:[]}}];S.media.articles[0].opponent='old';S.media.articles[0].result='W'");
+let news=run('newsPopupHtml016()');
+assert(news.includes('과거 경기 반응'));assert(!news.includes('다른 경기 반응'));
+assert(news.includes('RINGSIDE'));assert(news.includes('소셜미디어 반응'));
+run("S.media.articles[0].opponent='missing'");assert(run('newsPopupHtml016()').includes('아직 이 기사에 대한 반응이 없습니다.'));
+// Greetings are stable on redraw and leave simulation randomness untouched.
+run("S.history=[];S.offers=[];S.phase='decision';S.p.health=100;S.injuryUntil=0;storyState().active=null");
+let greeting=run('coachGreeting017()'),oldSeed=run('seed');
+assert.equal(run('coachGreeting017()'),greeting);assert.equal(run('seed'),oldSeed);
+run('S.p.health=50');assert.notEqual(run('coachGreeting017()'),greeting);
+for(let country of run('Object.keys(countryCodes)')){let badge=run('nationalityHtml('+JSON.stringify(country)+')');assert(badge.includes('<img'));assert(badge.includes(country));}
+console.log('PASS: news reactions match archived bout; stable contextual greetings; all nationality flags.');

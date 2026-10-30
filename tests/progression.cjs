@@ -100,9 +100,9 @@ run('while(!F.result)stepBout(F,F.decision);finishFight()');assert.equal(run('S.
 fresh014();run('S.tutorial074.done=true;S.proLicence.grade=1;S.proLicence.points[6]=sharedGrades[1].target-.1;for(let k of GOAT_KEYS092)S.p[k]=95;S.p.chin=99;S.p.potential=99;S.phase="decision";var target014=S.roster.find(n=>n.w===S.p.w&&!n.retired&&!beltsOf(n).length);for(let k of GOAT_KEYS092)target014[k]=40;target014.chin=40;target014.health=100;target014.available=0;S.offers=[offerFor(target014,"normal",[])];playCareerBout(0,true)');
 assert.equal(run('S.history[0].result'),'W');assert.equal(run('S.proLicence.grade'),2);assert.equal(run('S.eventView079'),'style014');assert(run('careerHome072()').includes('class-options014'));assert.equal(run('S.classCareer014.active'),null);
 console.log('PASS: mid-bout migration/resume and genuine B-to-A specialization event.');
-fresh014();run('S.money=100000;S.growthPolicy="balanced";for(let k of GOAT_KEYS092)S.p[k]=60;S.p.potential=99;investmentState()');
+fresh014();run('S.tutorial074.done=true;S.proLicence.grade=1;S.money=100000;S.growthPolicy="balanced";for(let k of GOAT_KEYS092)S.p[k]=60;S.p.potential=99;investmentState()');
 const weightBefore=run('currentGrowthWeights().punch'),campCount=run('S.classCareer014.totalCamps');
-run('buyEquipment("gloves")');assert.equal(run('S.p.punch'),62);assert.equal(run('S.investments.equipment.gloves'),1);assert(run('currentGrowthWeights().punch')>weightBefore);assert.equal(run('S.classCareer014.totalCamps'),campCount);
+run('buyEquipment("gloves")');assert.equal(run('S.p.punch'),60);assert.equal(run('S.investments.equipment.gloves'),1);assert(run('currentGrowthWeights().punch')>weightBefore);assert.equal(run('S.classCareer014.totalCamps'),campCount);
 assert(Math.abs(run('Object.values(currentGrowthWeights()).reduce((a,b)=>a+b,0)')-1)<1e-9);
 assert(run('wallet080()').includes('정규 훈련 · 펀치 성장 비중'));assert(run('investmentHtml()').includes('슬러거 · 복서펀처 육성 보조'));
 run('S.phase="decision";train(autoTrainingType())');assert.equal(run('S.classCareer014.totalCamps'),campCount+1);assert(run('S.classCareer014.camps.at(-1).weights.punch')>weightBefore);
@@ -116,5 +116,33 @@ for(const id of ['technical','power','complete','elite','world']){
 }
 fresh014();run('S.p.potential=80;S.p.skill=80;S.p.defense=60');assert.equal(run('paidCampPreview014("technical").defense'),1);assert.equal(run('paidCampPreview014("technical").skill'),undefined);
 run('S.p.defense=80');assert.equal(run('Object.keys(paidCampPreview014("technical")).length'),0);
-run('S.tutorial074.stage="policy"');const intro=run('tutorialHtml074()');assert(intro.includes('테크니컬형'));assert(intro.includes('파워형'));assert(intro.includes('training-route014'));
-console.log('PASS: equipment immediate gain and future training direction, normalized weights, no class experience by shopping, camp previews exactly match paid outcomes, caps, no duplicate attendance, linked tutorial labels.');
+run('S.tutorial074.stage="policy"');const intro=run('tutorialHtml074()');assert(intro.includes('B급이 되면 테크니컬형과 파워형'));assert(!intro.includes('selectTutorialPolicy074('));
+console.log('PASS: equipment unlocks and future training direction without instant stat gain, normalized weights, no class experience by shopping, camp previews exactly match paid outcomes, caps, no duplicate attendance, linked tutorial labels.');
+
+// Career/gym gates apply to both shop views and the actual purchase operation.
+fresh014();run('S.tutorial074.done=true;S.money=1000000;S.phase="decision";S.proLicence.grade=0;S.gym={level:0};S.investments={equipment:{},camp:null,log:[]};for(let k of GOAT_KEYS092)S.p[k]=50;S.p.potential=99');
+assert.equal(run('Object.keys(equipmentCatalog).length'),10);
+for(let id of ['gloves','shoes','bag','rope'])assert(run('equipmentAccess017("'+id+'").open'));
+for(let id of ['speedbag','heavybag','doublebag','mitts','resistance','smart']){
+ assert(!run('equipmentAccess017("'+id+'").open'));
+ let before=run('JSON.stringify({p:S.p,money:S.money,equipment:S.investments.equipment})');run('buyEquipment("'+id+'")');
+ assert.equal(run('JSON.stringify({p:S.p,money:S.money,equipment:S.investments.equipment})'),before);
+ assert(run('gearTile("'+id+'",1,equipmentCatalog["'+id+'"].name)').includes('assets/equipment/'));
+}
+assert(!run('investmentHtml()').includes('undefined'));assert(!run('wallet080()').includes('undefined'));
+assert(run('investmentHtml()').includes('해금 조건 · 체육관 Lv.4 + A급'));
+run('expandGym()');assert.equal(run('S.gym.level'),1);
+for(let id of ['speedbag','heavybag','doublebag'])assert(run('equipmentAccess017("'+id+'").open'));
+run('S.gym.level=0;S.proLicence.grade=2');for(let id of ['doublebag','mitts'])assert(run('equipmentAccess017("'+id+'").open'));
+assert(!run('equipmentAccess017("speedbag").open'));assert(!run('equipmentAccess017("resistance").open'));assert(!run('equipmentAccess017("smart").open'));
+run('S.gym.level=2');assert(run('equipmentAccess017("resistance").open'));assert(!run('equipmentAccess017("smart").open'));
+run('S.gym.level=3;S.proLicence.grade=1');assert(!run('equipmentAccess017("smart").open'));
+run('S.proLicence.grade=2');assert(run('equipmentAccess017("smart").open'));
+let weight=run('currentGrowthWeights().defense'),funds=run('S.money');run('buyEquipment("smart")');assert.equal(run('S.p.defense'),50);assert.equal(run('S.money'),funds-16000);assert(run('currentGrowthWeights().defense')>weight);
+run('S.gym.level=0;S.proLicence.grade=0;buyEquipment("rope")');assert.equal(run('S.investments.equipment.rope'),1);assert(!run('equipmentAccess017("rope").open'));
+run('S.proLicence.grade=2;buyEquipment("rope")');assert.equal(run('S.investments.equipment.rope'),2);assert(!run('equipmentAccess017("rope").open'));
+run('S.gym.level=3;buyEquipment("rope")');assert.equal(run('S.investments.equipment.rope'),3);
+funds=run('S.money');run('buyEquipment("rope")');assert.equal(run('S.money'),funds);
+run('saveGame();loadGame()');assert.equal(run('S.investments.equipment.smart'),1);assert.equal(run('S.investments.equipment.rope'),3);
+assert(Math.abs(run('Object.values(currentGrowthWeights()).reduce((a,b)=>a+b,0)')-1)<1e-9);
+console.log('PASS: seven new equipment types, gym and licence OR/AND gates, blocked purchases, upgrade gates, distinct icons, persistent effects and saved ownership.');

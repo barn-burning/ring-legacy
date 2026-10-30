@@ -25,8 +25,8 @@ run('const regressionStart074=startCareer;startCareer=function(...args){regressi
 function fresh(){run('reset();selectCandidate(0);showPathChoice();choosePath("pro");beginSelectedCareer();completePrologue073();S.shortRun.enabled=false;playCareerBout(0,false)');}
 fresh();run('F.max=8;F.offer.max=8;F.licenceGrade014=2;F.round=4;F.tacticalRecord092=[{round:1,opponent:"압박"},{round:2,opponent:"압박"},{round:3,opponent:"거리 유지"},{round:4,opponent:"압박"}];render()');
 assert.equal(run('secondWindow016()'),true);
-assert(run('coachingHtml()').includes('4R 종료 · 세컨드 지시'));
-assert(run('coachingHtml()').includes('카운터로 대응'));
+assert(run('coachingHtml()').includes('4R 종료 · 코너에서 본 장면'));
+assert(!run('coachingHtml()').includes('카운터로 대응'));assert(run('coachingHtml()').includes('짧은 연타'));
 run('setTactic("카운터")');
 assert.equal(run('F.decision'),'카운터');
 assert.equal(run('F.secondChange016'),true);
@@ -34,3 +34,17 @@ run('setTactic("압박")');assert.equal(run('F.decision'),'카운터');
 run('F.round=3');assert.equal(run('secondWindow016()'),false);
 run('F.round=4;F.licenceGrade014=1');assert.equal(run('secondWindow016()'),false);
 console.log('PASS: A-grade 8R halftime second cue, counter hint, one change, B-grade excluded.');
+
+run('F.max=6;F.offer.max=6;F.round=3;F.energy=[65,70];F.logs=["1R 첫 라운드", "2R 접전", "3R 압박"]');
+run('F.tacticalRecord092=[{round:1,opponent:"압박"},{round:2,opponent:"압박"},{round:3,opponent:"카운터"}]');
+assert.equal(run('cornerAdvice017(F).tactic'),'카운터');
+assert(!run('coachingHtml()').includes('추천 작전'));assert(run('coachingHtml()').includes('다음 구간의 지시'));
+assert(run('coachingHtml()').includes('공격 뒤에 짧게 응수'));
+assert(run('boutRoundHistory017(F)').includes('1R 첫 라운드'));
+assert(run('boutRoundHistory017(F)').includes('3R 압박'));
+run('F.energy[0]=25');assert.equal(run('cornerAdvice017(F).tactic'),'거리 유지');
+assert(run('cornerAdvice017(F).reason').includes('체력이 낮다'));
+run('F.energy[0]=70;F.tacticalRecord092=[{round:1,opponent:"카운터"},{round:2,opponent:"카운터"},{round:3,opponent:"거리 유지"}]');assert.equal(run('cornerAdvice017(F).tactic'),'거리 유지');
+run('F.tacticalRecord092=[{round:1,opponent:"거리 유지"},{round:2,opponent:"거리 유지"}]');assert.equal(run('cornerAdvice017(F).tactic'),'압박');
+let prior=run('JSON.stringify(F)'),rng=run('seed');run('coachingHtml();boutRoundHistory017(F)');assert.equal(run('JSON.stringify(F)'),prior);assert.equal(run('seed'),rng);
+console.log('PASS: 6R corner explains observed tactics, all round logs, low-energy override, no state or RNG mutation.');
