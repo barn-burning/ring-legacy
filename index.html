@@ -2401,7 +2401,7 @@ function classReadiness014(name){
   let rounds=Object.values(tactics).reduce((a,b)=>a+b,0),operating=def.tactic==='distance'?(tactics['거리 유지']+tactics['카운터'])/Math.max(1,rounds):def.tactic==='pressure'?tactics['압박']/Math.max(1,rounds):Object.values(tactics).filter(v=>v/Math.max(1,rounds)>=.15).length>=2||d.camps.filter(c=>c.policy==='balanced').length>=2?1:0;
   let ratio=Math.min(1,training/def.training,operating/def.operating,d.totalCamps/2,d.totalBouts/3),progress=Math.floor(100*ratio+1e-8);
   let ready=(S.proLicence?.grade||0)>=2&&ratio>=1-1e-9;
-  return {ready,progress,training:Math.round(training*100),operating:Math.round(operating*100)};
+  return {ready,progress,trainingReady:training>=def.training-1e-9,operatingReady:operating>=def.operating-1e-9,experienceReady:d.totalCamps>=2&&d.totalBouts>=3,training:Math.round(training*100),operating:Math.round(operating*100)};
 }
 function canSwitchClass014(){let d=progressionState014();return !d.active||d.totalCamps-d.lastClassCamp>=2&&d.totalBouts-d.lastClassBout>=2;}
 function chooseClass014(name){
@@ -2411,7 +2411,7 @@ function chooseClass014(name){
   let change={week:S.week,from:before||'기본기 수련',to:name};d.changes.push(change);S.careerTurns??=[];S.careerTurns.push({week:S.week,title:(before?'스타일 전환':'스타일 확립')+' · '+name,detail:CLASS_DEFS014[name].desc});news((before?before+' → ':'스타일 확립 · ')+name,'성장');
   S.eventView079='coach';render();saveGame();
 }
-function styleChoices014(){let d=progressionState014(),switchReady=canSwitchClass014();return '<div class="class-options014">'+Object.entries(CLASS_DEFS014).map(([name,def])=>{let q=classReadiness014(name),active=d.active===name;return '<article><h3>'+name+'</h3><p>'+def.desc+'</p><small>'+def.perk+'</small><progress max="100" value="'+q.progress+'" aria-label="'+name+' 확립 준비"></progress><button class="'+(q.ready&&switchReady&&!active?'primary':'outline')+'" onclick="chooseClass014(\''+name+'\')" '+(!q.ready||!switchReady||active||S.phase==='fighting'||S.phase==='retired'?'disabled':'')+'>'+(active?'현재 스타일':q.ready?switchReady?'이 스타일로 '+(d.active?'전환':'확립'):'전환 경험을 쌓는 중':'훈련·실전 준비 '+q.progress+'%')+'</button></article>';}).join('')+'</div>';}
+function styleChoices014(){let d=progressionState014(),switchReady=canSwitchClass014();return '<div class="class-options014">'+Object.entries(CLASS_DEFS014).map(([name,def])=>{let q=classReadiness014(name),active=d.active===name;return '<article><h3>'+name+'</h3><p>'+def.desc+'</p><small>'+def.perk+'</small><progress max="100" value="'+q.progress+'" aria-label="'+name+' 확립 준비"></progress><button class="'+(q.ready&&switchReady&&!active?'primary':'outline')+'" onclick="chooseClass014(\''+name+'\')" '+(!q.ready||!switchReady||active||S.phase==='fighting'||S.phase==='retired'?'disabled':'')+'>'+(active?'현재 스타일':q.ready?switchReady?'이 스타일로 '+(d.active?'전환':'확립'):'전환 경험을 쌓는 중':!q.experienceReady?'기초 경험을 더 쌓자':!q.trainingReady&&!q.operatingReady?'훈련·운영 경험 필요':!q.trainingReady?def.keys.map(keyLabel).join('·')+' 훈련 필요':def.tactic==='pressure'?'압박 실전 경험 필요':def.tactic==='distance'?'거리·카운터 경험 필요':'다양한 운영 경험 필요')+'</button></article>';}).join('')+'</div>';}
 function styleCareerHtml014(){
   let d=progressionState014(),advanced=(S.proLicence?.grade||0)>=2,exp=stanceExperience014(S.p);
   if(!advanced)return '<section class="panel stance-panel014"><small>기본 자세 · '+stanceName014(S.p)+'</small><p>오소독스 대응 '+exp.orthodox+'경기 · 사우스포 대응 '+exp.southpaw+'경기</p><small>A급에서 자신만의 스타일을 확립합니다.</small></section>';
