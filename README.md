@@ -2,7 +2,9 @@
 
 무명의 복서가 세계 챔피언이 되기까지의 여정을 담은 복싱 육성 게임입니다.
 
-현재 버전: **Alpha 0.9.5**
+[바로 플레이](https://barn-burning.github.io/ring-legacy/)
+
+현재 버전: **Alpha 0.9.6**
 
 ## 플레이 및 개발
 
@@ -21,3 +23,5 @@ GitHub 저장소의 Settings → Pages → Source에서 **GitHub Actions**를 �
 ## 피드백
 
 Issues에 사용 기기, 브라우저, 재현 과정과 함께 제보해주세요. 오류 화면을 첨부하면 원인을 찾는 데 도움이 됩니다.
+
+폰트는 Google Fonts의 Noto Sans KR(400–800)을 사용합니다.

@@ -1,6 +1,6 @@
 {
   "name": "ring-legacy",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "private": true,
   "scripts": {
     "test": "node tests/core.cjs && node tests/goat.cjs && node tests/economy.cjs"
